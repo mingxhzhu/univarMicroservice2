@@ -42,6 +42,8 @@ async function customerList() {
         let collection = db.collection('Customer');
         let query = {}; // query holds any query, filter logic.
         let res = await collection.find(query).toArray();
+
+        // format response here... mapping.
         console.log(res);
         return res;
     } catch (err) {
