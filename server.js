@@ -1,17 +1,12 @@
 var express = require('express');
 var app = express();
-//var compression = require('compression');
 var MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
-
-//app.use(compression());
-
 app.set('port', (process.env.PORT || 5050));
 app.use(express.json({limit: '50mb'}));
 
 app.use(express.json());
 app.use(express.urlencoded());
-//app.use(app.router);
 
 
 // variables, move to envt file
@@ -34,35 +29,8 @@ app.post('/', (req, res) => {
 });
 
 
-var customerListMicroservice = function()
-{
-  MongoClient.connect(url, function(err, client) {
-    assert.equal(null, err);
-    console.log("Connected successfully to server");
-
-    const db = client.db(dbName);
-
-    findCustomers(db, function() {
-        client.close();
-      });
-
-    client.close();
-  });
-
-}
-
-var findCustomers = function(db, callback) {
-  // Get the documents collection
-  const collection = db.collection('Customer');
-  // Find some documents
-  collection.find({}).toArray(function(err, docs) {
-    assert.equal(err, null);
-    console.log("Found the following records");
-    console.log(docs)
-    callback(docs);
-  });
-}
-
+// create a function for each microservice.
+// we will move these to separate files so they can be worked / supported independently.
 async function customerList() {
     const client = await MongoClient.connect(url, { useNewUrlParser: true })
         .catch(err => { console.log(err); });
@@ -72,7 +40,7 @@ async function customerList() {
     try {
         const db = client.db(dbName);
         let collection = db.collection('Customer');
-        let query = {};
+        let query = {}; // query holds any query, filter logic.
         let res = await collection.find(query).toArray();
         console.log(res);
         return res;
@@ -83,6 +51,7 @@ async function customerList() {
     }
 }
 
+// move this to another file eventually and add error handling.
 async function customerRead(customerId) {
     const client = await MongoClient.connect(url, { useNewUrlParser: true })
         .catch(err => { console.log(err); });
