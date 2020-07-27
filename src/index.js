@@ -11,24 +11,24 @@ const app = express()
 app.use(cors())
  
 app.use('/customer', routes.customer);
+app.use((error, req, res, next) => {
+    res.status(500)
+    res.json({ message: error.message})
+})
 
 const MongoClient = mongodb.MongoClient
 const client = new MongoClient(process.env.MONGO_URI)
 client.connect(err => {
     if(err){
-        console.log('Failed to connect to database ...')
+        console.log(`Failed to connect to database ... \n ${err}`)
         process.exit(1)
     }
     console.log('MongoDB connected ...')
+    app.locals.mongodb = client.db(DB);
+    console.log(`Using mongo database: ${DB}`)
     app.listen(3000, () =>
-    console.log(`Server started and listening on port ${PORT}`)
-    );
-    // run quick query
-    const collection = client.db(DB).collection('Customer');
-    collection.findOne({}, (err, customer) => {
-        console.log(customer)
-    })
-    client.close()
+        console.log(`Server started and listening on port ${PORT}`)
+    )
 })
 
 
