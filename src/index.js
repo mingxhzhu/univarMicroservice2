@@ -11,6 +11,7 @@ const app = express()
 app.use(cors())
  
 app.use('/customer', routes.customer);
+// global error handler
 app.use((error, req, res, next) => {
     res.status(500)
     res.json({ message: error.message})
